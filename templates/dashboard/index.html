@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">Query FireMon Device</h1>
+    </div>
+
+    <!-- Query Form -->
+    <div class="query-section">
+        <form method="GET" class="query-form">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="query" 
+                    class="query-input"
+                    placeholder="show rules with source 10.1.1.0/24"
+                    value="{{ query }}"
+                >
+                <button type="submit" class="query-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Query
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Query Examples -->
+    <div class="examples-section">
+        <h3 class="examples-title">Query Examples:</h3>
+        <ul class="examples-list">
+            <li class="example-item">
+                <code class="example-code">show rules with source 10.1.1.0/24</code>
+            </li>
+            <li class="example-item">
+                <code class="example-code">show rules with destination 10.2.2.0./24</code>
+            </li>
+            <li class="example-item">
+                <code class="example-code">HTTP</code> - Search for HTTP rules
+            </li>
+            <li class="example-item">
+                <code class="example-code">Allow</code> - Search for Allow actions
+            </li>
+        </ul>
+    </div>
+
+    <!-- Results Section -->
+    {% if query_successful and results %}
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title">Query Results</h2>
+                <span class="results-count">{{ results|length }} rule{{ results|length|pluralize }} found</span>
+            </div>
+            
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Rule ID</th>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Service</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rule in results %}
+                            <tr class="table-row">
+                                <td class="rule-id">{{ rule.rule_id }}</td>
+                                <td class="source">{{ rule.source }}</td>
+                                <td class="destination">{{ rule.destination }}</td>
+                                <td class="service">
+                                    <span class="service-tag service-{{ rule.service|lower }}">
+                                        {{ rule.service }}
+                                    </span>
+                                </td>
+                                <td class="action">
+                                    <span class="action-tag action-{{ rule.action|lower }}">
+                                        {{ rule.action }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% elif query and not results %}
+        <div class="no-results">
+            <div class="no-results-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </div>
+            <h3 class="no-results-title">No Rules Found</h3>
+            <p class="no-results-text">Try adjusting your query or check the examples above.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
